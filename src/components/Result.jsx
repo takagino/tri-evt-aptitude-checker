@@ -12,11 +12,516 @@ import {
   Pause,
   X,
   ArrowRightCircle,
+  Globe,
+  MonitorSmartphone,
+  Cpu,
+  Palette,
+  Briefcase,
+  GraduationCap,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { jobData } from '../data/jobData';
 
 const SCROLL_SPEED = 15;
+
+// ==========================================
+// ▼ サブコンテンツ（タブの中身）
+// ==========================================
+
+const TabWorld = () => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '32px',
+      textAlign: 'left',
+      paddingBottom: '40px',
+    }}
+  >
+    <div
+      style={{
+        padding: '16px',
+        backgroundColor: '#000',
+        color: '#fff',
+        border: '4px solid #000',
+        boxShadow: '8px 8px 0px 0px #FFDE00',
+      }}
+    >
+      <h3
+        style={{
+          fontSize: '20px',
+          fontWeight: '900',
+          fontStyle: 'italic',
+          marginBottom: '8px',
+        }}
+      >
+        Webの技術は「画面の外」へ！
+      </h3>
+      <p style={{ fontSize: '14px', lineHeight: '1.6', fontWeight: 'bold' }}>
+        Web＝ホームページを作るだけの技術ではありません。今、ブラウザを舞台に世界中が驚くような進化が起きています。
+      </p>
+    </div>
+
+    <div className="neo-card" style={{ padding: '24px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <Globe size={28} color="#7000FF" strokeWidth={3} />
+        <h4 style={{ color: '#7000FF', fontSize: '20px', fontWeight: '900' }}>
+          3D・メタバース空間
+        </h4>
+      </div>
+      <p
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.8',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        Blenderなどで作った3Dモデルを、WebGLという技術を使ってブラウザ上でグリグリ動かす！アプリをインストールさせなくても、URLひとつでゲームのような没入感のある世界へ招待できます。
+      </p>
+    </div>
+
+    <div className="neo-card" style={{ padding: '24px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <Cpu size={28} color="#FF5C00" strokeWidth={3} />
+        <h4 style={{ color: '#FF5C00', fontSize: '20px', fontWeight: '900' }}>
+          IoT（モノとWebを繋ぐ）
+        </h4>
+      </div>
+      <p
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.8',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        Arduinoなどの小さなコンピューターとWebを連携！ブラウザのボタンを押すと目の前のロボットが動いたり、センサーの反応を画面のオシャレなアニメーションに連動させたり、魔法みたいなモノづくりが可能です。
+      </p>
+    </div>
+
+    <div className="neo-card" style={{ padding: '24px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <MonitorSmartphone size={28} color="#00E0FF" strokeWidth={3} />
+        <h4 style={{ color: '#00E0FF', fontSize: '20px', fontWeight: '900' }}>
+          ユニバーサルなデザイン
+        </h4>
+      </div>
+      <p
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.8',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        年齢や障がいの有無に関係なく、すべての人が快適に情報を受け取れる「Webアクセシビリティ」。デザインの力と最新のコードで、世界中の人を笑顔にする優しいシステムを作ります。
+      </p>
+    </div>
+  </div>
+);
+
+const TabFuture = () => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '32px',
+      textAlign: 'left',
+      paddingBottom: '40px',
+    }}
+  >
+    <div
+      className="neo-label"
+      style={{
+        backgroundColor: '#00FF94',
+        fontSize: '16px',
+        padding: '8px 16px',
+        alignSelf: 'flex-start',
+      }}
+    >
+      無限に広がるキャリアパス
+    </div>
+
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+      <div
+        className="neo-card"
+        style={{ padding: '20px', borderLeft: '16px solid #FF5C00' }}
+      >
+        <h4
+          style={{ fontWeight: '900', fontSize: '18px', marginBottom: '4px' }}
+        >
+          制作会社（Webプロダクション）
+        </h4>
+        <p
+          style={{
+            fontSize: '13px',
+            lineHeight: '1.6',
+            fontWeight: 'bold',
+            color: '#475569',
+          }}
+        >
+          プロのクリエイターが集まるモノづくりの最前線。様々な企業のWebサイトやキャンペーン企画をチームで作り上げます。毎日違う刺激が欲しい人にぴったり！
+        </p>
+      </div>
+      <div
+        className="neo-card"
+        style={{ padding: '20px', borderLeft: '16px solid #00E0FF' }}
+      >
+        <h4
+          style={{ fontWeight: '900', fontSize: '18px', marginBottom: '4px' }}
+        >
+          自社開発・事業会社
+        </h4>
+        <p
+          style={{
+            fontSize: '13px',
+            lineHeight: '1.6',
+            fontWeight: 'bold',
+            color: '#475569',
+          }}
+        >
+          SNS、ECサイト、動画サービスなど、自社のサービスを企画から開発まで行います。ユーザーの反応をダイレクトに見ながら、じっくりサービスを育てていく達成感があります。
+        </p>
+      </div>
+      <div
+        className="neo-card"
+        style={{ padding: '20px', borderLeft: '16px solid #FFDE00' }}
+      >
+        <h4
+          style={{ fontWeight: '900', fontSize: '18px', marginBottom: '4px' }}
+        >
+          一般企業の広報・Web担当
+        </h4>
+        <p
+          style={{
+            fontSize: '13px',
+            lineHeight: '1.6',
+            fontWeight: 'bold',
+            color: '#475569',
+          }}
+        >
+          IT以外の企業（食品、アパレル、自動車など）でもWebの力は必須。社内のIT番長として、デジタル面から企業を支える重要なポジションです。
+        </p>
+      </div>
+    </div>
+
+    <div
+      className="neo-card"
+      style={{ padding: '24px', backgroundColor: '#000', color: '#fff' }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '16px',
+          borderBottom: '2px solid #333',
+          paddingBottom: '12px',
+        }}
+      >
+        <Briefcase size={24} color="#FFDE00" />
+        <h4 style={{ fontWeight: '900', fontSize: '20px' }}>
+          データで見るリアル
+        </h4>
+      </div>
+      <ul
+        style={{
+          fontSize: '15px',
+          fontWeight: 'bold',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          paddingLeft: '8px',
+        }}
+      >
+        <li style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '24px' }}>👨‍🎓</span>{' '}
+          男女比はほぼ半々！性別問わず実力で輝ける世界。
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '24px' }}>🏢</span>{' '}
+          地元エリアの優良IT企業への就職実績も多数！
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '24px' }}>💻</span>{' '}
+          Notionなどの最新ツールを使いこなし、私服やリモートワークなど自由な働き方を実現する先輩が急増中。
+        </li>
+      </ul>
+    </div>
+  </div>
+);
+
+const TabLearn = () => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '32px',
+      textAlign: 'left',
+      paddingBottom: '40px',
+    }}
+  >
+    <div
+      className="neo-card"
+      style={{ padding: '24px', backgroundColor: '#FFDE00' }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <Zap size={28} fill="black" />
+        <h4 style={{ fontWeight: '900', fontSize: '22px' }}>
+          実践！企業プロジェクト
+        </h4>
+      </div>
+      <p style={{ fontSize: '14px', lineHeight: '1.8', fontWeight: 'bold' }}>
+        ただ教科書を読むだけじゃつまらない。実在するクライアント様から直接依頼を受け、学生チームでヒアリングからデザイン、公開まで全てを行う超・実践的な授業があります。「本物」を作る経験が、就職活動での最大の武器になります。
+      </p>
+    </div>
+
+    <div className="neo-card" style={{ padding: '24px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <Palette size={24} color="#FF00E5" strokeWidth={3} />
+        <h4 style={{ fontWeight: '900', fontSize: '18px' }}>
+          デザイン × プログラミング
+        </h4>
+      </div>
+      <p
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.8',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        見た目を美しく作る「デザイン」と、それに命を吹き込み動かす「プログラミング」。両方の基礎をしっかり学ぶことで、アニメーションやアートなど、表現力豊かなクリエイティブを生み出せます。
+      </p>
+    </div>
+
+    <div
+      className="neo-card"
+      style={{
+        padding: '24px',
+        backgroundColor: '#e2e8f0',
+        boxShadow: '4px 4px 0px 0px #94a3b8',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '12px',
+        }}
+      >
+        <GraduationCap size={24} color="#000" strokeWidth={3} />
+        <h4 style={{ fontWeight: '900', fontSize: '18px' }}>
+          一生モノの「社会人基礎力」
+        </h4>
+      </div>
+      <p
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.8',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        パソコンのスキルだけではありません。自分のアイデアを伝えるプレゼン力、チームで協力するコミュニケーション力、企業研究など、社会に出てからずっと役立つチカラを徹底的に鍛えます。
+      </p>
+    </div>
+  </div>
+);
+
+// ==========================================
+// ▼ フルスクリーン情報モーダル
+// ==========================================
+const FullScreenInfoModal = ({ onClose }) => {
+  const [activeTab, setActiveTab] = useState('world');
+
+  // モーダル表示中は背面のスクロールを無効化する
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      exit={{ y: '100%' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999, // 画面の最前面へ
+        backgroundColor: '#e8edf2',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* モーダルヘッダー */}
+      <div
+        style={{
+          backgroundColor: 'black',
+          color: 'white',
+          padding: '20px 24px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '4px solid #fff',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Zap size={24} fill="#FFDE00" color="#FFDE00" />
+          <span
+            style={{
+              fontWeight: '900',
+              fontSize: '20px',
+              fontStyle: 'italic',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+            }}
+          >
+            Explore Web World
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <X size={32} strokeWidth={3} />
+        </button>
+      </div>
+
+      {/* タブナビゲーション */}
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: '6px solid black',
+          backgroundColor: '#fff',
+        }}
+      >
+        {[
+          { id: 'world', label: '広がるWebの世界' },
+          { id: 'learn', label: 'トライデントでの学び' },
+          { id: 'future', label: '卒業後の自分' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              flex: 1,
+              padding: '20px 8px',
+              fontWeight: '900',
+              fontSize: '15px',
+              backgroundColor: activeTab === tab.id ? '#FFDE00' : 'transparent',
+              border: 'none',
+              borderRight: '4px solid black',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* タブコンテンツ（スクロール領域） */}
+      <div
+        className="custom-scrollbar"
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 80px 24px' }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === 'world' && <TabWorld />}
+            {activeTab === 'future' && <TabFuture />}
+            {activeTab === 'learn' && <TabLearn />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* 閉じるボタン（フッター固定） */}
+      <div
+        style={{
+          padding: '16px',
+          backgroundColor: '#fff',
+          borderTop: '4px solid black',
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="neo-btn"
+          style={{
+            width: '100%',
+            padding: '20px',
+            backgroundColor: 'black',
+            color: 'white',
+            fontSize: '20px',
+          }}
+        >
+          診断結果に戻る
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+// ==========================================
+// ▼ Result 本体コンポーネント
+// ==========================================
 
 const Result = ({ result, onReset }) => {
   const [showFlow, setShowFlow] = useState(false);
@@ -417,7 +922,7 @@ const Result = ({ result, onReset }) => {
       {/* 固定フッター */}
       <footer className="result-footer">
         <button onClick={() => setShowFlow(true)} className="neo-btn btn-main">
-          <ClipboardList size={22} /> 制作の流れ
+          <ClipboardList size={22} /> Webの世界をもっと知る
         </button>
         <button
           onClick={onReset}
@@ -428,130 +933,11 @@ const Result = ({ result, onReset }) => {
         </button>
       </footer>
 
-      {/* モーダル */}
+      {/* フルスクリーンモーダル */}
       <AnimatePresence>
-        {showFlow && <WorkflowModal onClose={() => setShowFlow(false)} />}
+        {showFlow && <FullScreenInfoModal onClose={() => setShowFlow(false)} />}
       </AnimatePresence>
     </div>
-  );
-};
-
-const WorkflowModal = ({ onClose }) => {
-  const steps = [
-    {
-      title: '企画・ヒアリング',
-      desc: 'クライアントの悩みを聞き、解決策を考えます。',
-    },
-    {
-      title: '設計・構成',
-      desc: 'サイトの地図を作り、使いやすさを追求します。',
-    },
-    { title: 'デザイン制作', desc: '見た目や空気感を色とカタチで表現します。' },
-    {
-      title: '実装・コーディング',
-      desc: 'プログラムを書いて、ブラウザで動かします。',
-    },
-    { title: '公開・運用', desc: '世界中に公開し、さらに使いやすく育てます。' },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 50,
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-      }}
-    >
-      <motion.div
-        initial={{ y: 50 }}
-        animate={{ y: 0 }}
-        className="neo-card"
-        style={{
-          width: '100%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          backgroundColor: '#FFDE00',
-          padding: 0,
-        }}
-      >
-        <div
-          style={{
-            position: 'sticky',
-            top: 0,
-            backgroundColor: 'black',
-            color: 'white',
-            padding: '16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            style={{
-              fontWeight: '900',
-              fontStyle: 'italic',
-              textTransform: 'uppercase',
-            }}
-          >
-            制作の流れ
-          </span>
-          <button
-            onClick={onClose}
-            className="neo-btn"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'white',
-              boxShadow: 'none',
-            }}
-          >
-            <X size={24} />
-          </button>
-        </div>
-        <div style={{ padding: '24px' }}>
-          {steps.map((s, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                gap: '16px',
-                marginBottom: '24px',
-                position: 'relative',
-              }}
-            >
-              <div className="step-badge">{i + 1}</div>
-              <div style={{ textAlign: 'left' }}>
-                <h4 style={{ fontWeight: '900', marginBottom: '4px' }}>
-                  {s.title}
-                </h4>
-                <p style={{ fontSize: '13px', opacity: 0.8 }}>{s.desc}</p>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={onClose}
-            className="neo-btn"
-            style={{
-              width: '100%',
-              padding: '16px',
-              backgroundColor: 'black',
-              color: 'white',
-            }}
-          >
-            閉じる
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 };
 
