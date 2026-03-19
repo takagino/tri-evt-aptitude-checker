@@ -6,19 +6,14 @@ import {
   Zap,
   Heart,
   Star,
-  Target,
-  Users,
   BookOpen,
-  GraduationCap,
-  X,
-  ArrowRightCircle,
   ChevronUp,
   Play,
   Pause,
+  X,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { jobData } from '../data/jobData';
-import { NEO_CARD, NEO_LABEL } from '../data/theme';
 
 const SCROLL_SPEED = 15;
 
@@ -28,6 +23,7 @@ const Result = ({ result, onReset }) => {
   const scrollRef = useRef(null);
   const jobDetails = jobData.find((j) => j.id === Number(result.id));
 
+  // 祝福の紙吹雪
   useEffect(() => {
     confetti({
       particleCount: 150,
@@ -37,8 +33,7 @@ const Result = ({ result, onReset }) => {
     });
   }, []);
 
-  if (!jobDetails) return null;
-
+  // オートスクロールのロジック
   useEffect(() => {
     let interval;
     if (isAutoScrolling) {
@@ -56,6 +51,8 @@ const Result = ({ result, onReset }) => {
     return () => clearInterval(interval);
   }, [isAutoScrolling]);
 
+  if (!jobDetails) return null;
+
   const scrollToTop = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -64,277 +61,303 @@ const Result = ({ result, onReset }) => {
   };
 
   const stats = [
-    { label: '企画・設計', key: 'planning', color: 'bg-[#00E0FF]' },
-    { label: '表現・感性', key: 'creative', color: 'bg-[#FF00E5]' },
-    { label: '論理・構築', key: 'technical', color: 'bg-[#7000FF]' },
-    { label: '共感・分析', key: 'analysis', color: 'bg-[#00FF94]' },
-    { label: '伝える力', key: 'communication', color: 'bg-[#FF5C00]' },
+    { label: '企画・設計', key: 'planning', color: '#00E0FF' },
+    { label: '表現・感性', key: 'creative', color: '#FF00E5' },
+    { label: '論理・構築', key: 'technical', color: '#7000FF' },
+    { label: '共感・分析', key: 'analysis', color: '#00FF94' },
+    { label: '伝える力', key: 'communication', color: '#FF5C00' },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#E8EDF2] relative overflow-hidden font-bold">
-      {/* ヘッダー：デザイン優先の英語 */}
-      <header className="bg-white border-b-4 border-black p-4 flex justify-between items-center z-20">
-        <div className="flex items-center gap-2">
+    <div className="result-page">
+      {/* ヘッダー */}
+      <header className="result-header">
+        <div className="chat-status-group">
           <Star size={18} fill="black" />
-          <span className="text-sm font-black italic uppercase tracking-tighter">
-            Diagnostic Report
-          </span>
+          <span className="chat-status-text">Diagnostic Report</span>
         </div>
-        <div className="bg-[#FFDE00] border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase italic">
-          Complete!
+        <div
+          className="report-tag"
+          style={{
+            backgroundColor: '#FFDE00',
+            border: '2px solid black',
+            padding: '2px 8px',
+            fontSize: '10px',
+            fontWeight: '900',
+          }}
+        >
+          COMPLETE!
         </div>
       </header>
 
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-12 custom-scrollbar pb-24"
-      >
-        {/* --- GROUP 1: 診断結果 --- */}
-        <section className="space-y-6 pt-4 text-center">
+      <div ref={scrollRef} className="result-scroll-area custom-scrollbar">
+        {/* --- SECTION 1: 診断結果本体 --- */}
+        <section
+          style={{
+            textAlign: 'center',
+            marginBottom: '48px',
+            paddingTop: '16px',
+          }}
+        >
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            className={`${NEO_CARD} inline-block !p-4 !shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}
+            className="neo-card"
+            style={{
+              display: 'inline-block',
+              boxShadow: '12px 12px 0px black',
+            }}
           >
             <img
               src={`/images/${jobDetails.imagePath}`}
-              className="w-60 h-60 mx-auto"
+              style={{ width: '240px', height: '240px' }}
               alt={jobDetails.title}
             />
           </motion.div>
 
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none text-black">
-            {jobDetails.title}
-          </h1>
-          <div className="bg-black text-[#00FF94] inline-block px-3 py-1 text-xs uppercase italic transform -rotate-1 italic">
-            {jobDetails.catchcopy}
+          <div style={{ marginTop: '24px' }}>
+            <h1
+              style={{
+                fontSize: '36px',
+                fontWeight: '900',
+                fontStyle: 'italic',
+                textTransform: 'uppercase',
+              }}
+            >
+              {jobDetails.title}
+            </h1>
+            <div
+              style={{
+                backgroundColor: 'black',
+                color: '#00FF94',
+                display: 'inline-block',
+                padding: '4px 12px',
+                marginTop: '16px',
+                transform: 'rotate(-1deg)',
+                fontStyle: 'italic',
+              }}
+            >
+              {jobDetails.catchcopy}
+            </div>
           </div>
 
-          {/* 才能分析グラフ */}
-          <div className={NEO_CARD}>
-            <div className="flex items-center gap-2 mb-4 border-b-2 border-black pb-2 text-xs font-black uppercase tracking-widest">
-              <Zap size={16} fill="black" /> 才能分析レポート
+          {/* 才能分析レポート */}
+          <div
+            className="neo-card"
+            style={{ marginTop: '32px', textAlign: 'left' }}
+          >
+            <div className="talent-report-title">
+              <Zap fill="black" />{' '}
+              <span style={{ fontWeight: '900' }}>才能分析レポート</span>
             </div>
-            <div className="space-y-4 text-left">
-              {stats.map((s) => (
-                <div key={s.key} className="space-y-1">
-                  <div className="flex justify-between text-[10px] font-black uppercase italic opacity-50 px-1">
-                    <span>{s.label}</span>
-                    <span>{result.scores?.[s.key]}%</span>
-                  </div>
-                  <div className="h-4 bg-slate-100 border-2 border-black overflow-hidden relative">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${result.scores?.[s.key]}%` }}
-                      transition={{ duration: 1, ease: 'steps(10)' }}
-                      className={`h-full ${s.color} border-r-2 border-black`}
-                    />
-                  </div>
+            {stats.map((s) => (
+              <div key={s.key} style={{ marginBottom: '16px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '14px',
+                    opacity: 0.5,
+                  }}
+                >
+                  <span>{s.label}</span>
+                  <span>{result.scores?.[s.key]}%</span>
                 </div>
-              ))}
-            </div>
+                <div className="stat-bar-container">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${result.scores?.[s.key]}%` }}
+                    transition={{ duration: 1, ease: 'linear' }}
+                    className="stat-bar-fill"
+                    style={{ backgroundColor: s.color }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* AIアドバイス */}
           <div
-            className={`${NEO_CARD} !bg-black text-white !text-left relative overflow-hidden`}
+            className="neo-card"
+            style={{
+              marginTop: '24px',
+              backgroundColor: 'black',
+              color: 'white',
+              textAlign: 'left',
+            }}
           >
-            <h4 className="text-[#FFDE00] italic text-xs mb-2 uppercase tracking-widest">
+            <h4
+              style={{
+                color: '#FFDE00',
+                fontStyle: 'italic',
+                marginBottom: '8px',
+              }}
+            >
               AIアドバイス
             </h4>
-            <p className="text-sm leading-relaxed italic relative z-10">
+            <p
+              style={{
+                fontSize: '14px',
+                lineHeight: '1.6',
+                fontStyle: 'italic',
+              }}
+            >
               {result.aiReason}
             </p>
-            <Heart
-              className="absolute -bottom-2 -right-2 opacity-20"
-              size={60}
-              fill="white"
-            />
           </div>
         </section>
 
-        <hr className="border-t-4 border-dashed border-black/10 mx-4" />
-
-        {/* --- GROUP 2: 業種の説明 --- */}
-        <section className="space-y-8">
-          <div className={`${NEO_LABEL} bg-[#00E0FF] -rotate-2 ml-2 text-sm`}>
+        {/* --- SECTION 2: 職業詳細 --- */}
+        <section style={{ marginBottom: '48px' }}>
+          <div
+            className="neo-label"
+            style={{
+              backgroundColor: '#00E0FF',
+              transform: 'rotate(-2deg)',
+              marginBottom: '16px',
+            }}
+          >
             この職業について
           </div>
-
-          <div className={NEO_CARD}>
-            <p className="text-[15px] leading-relaxed text-left text-slate-800">
+          <div className="neo-card" style={{ marginBottom: '32px' }}>
+            <p
+              style={{ fontSize: '14px', lineHeight: '1.6', textAlign: 'left' }}
+            >
               {jobDetails.description}
             </p>
           </div>
 
-          {/* 主なミッション */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 px-1 text-black">
-              <BookOpen size={20} strokeWidth={3} className="text-[#FF00E5]" />
-              <h3 className="text-lg font-black italic uppercase tracking-tighter">
-                主なミッション
-              </h3>
-            </div>
-            <div className="grid gap-3">
-              {jobDetails.responsibilities.map((r, i) => (
-                <div
-                  key={i}
-                  className="bg-white border-2 border-black p-4 flex gap-4 items-start text-left"
-                >
-                  <div className="w-8 h-8 bg-black text-white text-xs flex items-center justify-center font-black italic shrink-0 mt-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <h4 className="font-black text-[15px] leading-tight mb-1">
-                      {r.title}
-                    </h4>
-                    <p className="text-[12px] text-slate-500 leading-relaxed font-medium">
-                      {r.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '16px',
+            }}
+          >
+            <BookOpen size={20} color="#FF00E5" />
+            <h3 style={{ fontSize: '18px', fontWeight: '900' }}>
+              主なミッション
+            </h3>
           </div>
-
-          {/* 最高の相棒 */}
-          <div className={NEO_CARD}>
-            <div className="flex items-center gap-2 mb-4 border-b-2 border-black pb-2 text-[10px] uppercase font-black opacity-50">
-              <Users size={16} strokeWidth={3} /> 最高の相棒
-            </div>
-            <div className="space-y-4 text-left">
-              {jobDetails.compatibility.map((c, i) => (
-                <div key={i} className="group">
-                  <div className="text-[13px] font-black text-[#FF5C00] flex items-center gap-1.5 mb-1">
-                    <ArrowRightCircle size={14} strokeWidth={3} /> {c.title}
-                  </div>
-                  <p className="text-[11px] text-slate-500 italic pl-5 leading-relaxed">
-                    {c.description}
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+          >
+            {jobDetails.responsibilities.map((r, i) => (
+              <div key={i} className="mission-item">
+                <div className="step-badge">{i + 1}</div>
+                <div>
+                  <h4
+                    style={{
+                      fontWeight: '900',
+                      fontSize: '15px',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {r.title}
+                  </h4>
+                  <p style={{ fontSize: '12px', color: '#64748b' }}>
+                    {r.description}
                   </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <hr className="border-t-4 border-dashed border-black/10 mx-4" />
-
-        {/* --- GROUP 3: 今日からできること --- */}
-        <section className="space-y-6 pb-6">
-          <div className={`${NEO_LABEL} bg-[#FFDE00] rotate-1 ml-2 text-sm`}>
+        {/* --- SECTION 3: 日常トレーニング --- */}
+        <section style={{ paddingBottom: '24px' }}>
+          <div
+            className="neo-label"
+            style={{
+              backgroundColor: '#FFDE00',
+              transform: 'rotate(1deg)',
+              marginBottom: '16px',
+            }}
+          >
             日常トレーニング
           </div>
-
-          <div className={`${NEO_CARD} !bg-white text-left`}>
-            <div className="flex items-center gap-2 mb-6 relative z-10">
-              <Zap
-                className="text-[#7000FF]"
-                size={28}
-                strokeWidth={3}
-                fill="#7000FF"
-              />
-              <h3 className="text-lg font-black tracking-tighter italic uppercase text-black">
+          <div className="neo-card">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '24px',
+              }}
+            >
+              <Zap fill="#7000FF" color="#7000FF" size={28} />
+              <h3 style={{ fontSize: '18px', fontWeight: '900' }}>
                 今日からチャレンジ！
               </h3>
             </div>
-
-            <ul className="space-y-4">
-              {jobDetails.howToBecome &&
-                jobDetails.howToBecome.map((step, i) => (
-                  <li
-                    key={i}
-                    className="flex gap-4 items-start bg-slate-50 p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+            >
+              {jobDetails.howToBecome?.map((step, i) => (
+                <div
+                  key={i}
+                  className="mission-item"
+                  style={{
+                    backgroundColor: '#f8fafc',
+                    boxShadow: '4px 4px 0px black',
+                  }}
+                >
+                  <div
+                    className="step-badge"
+                    style={{
+                      backgroundColor: '#7000FF',
+                      height: '24px',
+                      width: 'auto',
+                      padding: '0 8px',
+                    }}
                   >
-                    <div className="bg-[#7000FF] text-white text-[10px] font-black italic px-2 py-1 shrink-0 mt-0.5">
-                      STEP {i + 1}
-                    </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-800">
-                      {step}
-                    </p>
-                  </li>
-                ))}
-            </ul>
-
-            <p className="mt-8 text-[11px] font-black italic text-slate-400 text-center uppercase tracking-widest">
-              — Just one step a day —
-            </p>
+                    STEP {i + 1}
+                  </div>
+                  <p style={{ fontSize: '13px', fontWeight: '700' }}>{step}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </div>
 
-      <div className="fixed bottom-32 right-4 flex flex-col gap-3 z-40">
-        {/* 自動スクロールボタン */}
-        <motion.button
-          whileHover={{
-            x: -2,
-            y: -2,
-            boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
-          }}
-          whileTap={{ x: 2, y: 2, boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)' }}
+      {/* フローティング操作ボタン */}
+      <div className="floating-controls">
+        <button
           onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-          className={`w-12 h-12 flex items-center justify-center border-4 border-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
-            isAutoScrolling ? 'bg-[#FF00E5] text-white' : 'bg-white text-black'
-          }`}
+          className="neo-btn control-btn"
+          style={{
+            backgroundColor: isAutoScrolling ? '#FF00E5' : 'white',
+            color: isAutoScrolling ? 'white' : 'black',
+          }}
         >
           {isAutoScrolling ? (
-            <Pause size={24} strokeWidth={3} />
+            <Pause size={24} />
           ) : (
-            <Play size={24} strokeWidth={3} className="ml-1" />
+            <Play size={24} style={{ marginLeft: '4px' }} />
           )}
-        </motion.button>
-
-        {/* トップへ戻るボタン */}
-        <motion.button
-          whileHover={{
-            x: -2,
-            y: -2,
-            boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
-          }}
-          whileTap={{ x: 2, y: 2, boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)' }}
-          onClick={scrollToTop}
-          className="w-12 h-12 flex items-center justify-center bg-white border-4 border-black text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-        >
-          <ChevronUp size={28} strokeWidth={3} />
-        </motion.button>
+        </button>
+        <button onClick={scrollToTop} className="neo-btn control-btn">
+          <ChevronUp size={28} />
+        </button>
       </div>
 
       {/* 固定フッター */}
-      <footer className="p-4 pb-10 bg-white border-t-4 border-black flex gap-3 z-30 shadow-[0_-8px_20px_rgba(0,0,0,0.05)]">
-        <motion.button
-          whileHover={{
-            y: 4,
-            boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)',
-          }}
-          transition={{
-            type: 'tween',
-            ease: 'easeOut',
-            duration: 0,
-          }}
-          onClick={() => setShowFlow(true)}
-          className="flex-1 bg-[#00FF94] border-4 border-black py-4 font-black text-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase italic flex items-center justify-center gap-2"
-        >
-          <ClipboardList size={22} strokeWidth={3} /> 制作の流れ
-        </motion.button>
-        <motion.button
-          whileHover={{
-            rotate: 90,
-            backgroundColor: '#FFDE00',
-            boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)',
-          }}
-          transition={{
-            type: 'tween',
-            ease: 'easeOut',
-            duration: 0,
-          }}
+      <footer className="result-footer">
+        <button onClick={() => setShowFlow(true)} className="neo-btn btn-main">
+          <ClipboardList size={22} /> 制作の流れ
+        </button>
+        <button
           onClick={onReset}
-          className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+          className="neo-btn control-btn"
+          style={{ width: '64px', height: '64px' }}
         >
-          <RefreshCcw size={28} strokeWidth={3} />
-        </motion.button>
+          <RefreshCcw size={28} />
+        </button>
       </footer>
 
-      {/* Workflowモーダル */}
+      {/* モーダル */}
       <AnimatePresence>
         {showFlow && <WorkflowModal onClose={() => setShowFlow(false)} />}
       </AnimatePresence>
@@ -365,47 +388,93 @@ const WorkflowModal = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 50,
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        backdropFilter: 'blur(4px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+      }}
     >
       <motion.div
-        initial={{ y: 50, scale: 0.9 }}
-        animate={{ y: 0, scale: 1 }}
-        exit={{ y: 50, scale: 0.9 }}
-        className={`${NEO_CARD} w-full max-h-[80vh] overflow-y-auto !bg-[#FFDE00] !p-0`}
+        initial={{ y: 50 }}
+        animate={{ y: 0 }}
+        className="neo-card"
+        style={{
+          width: '100%',
+          maxHeight: '80vh',
+          overflowY: 'auto',
+          backgroundColor: '#FFDE00',
+          padding: 0,
+        }}
       >
-        <div className="sticky top-0 bg-black text-white p-4 flex justify-between items-center z-10">
-          <span className="font-black italic uppercase tracking-widest text-sm">
+        <div
+          style={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <span
+            style={{
+              fontWeight: '900',
+              fontStyle: 'italic',
+              textTransform: 'uppercase',
+            }}
+          >
             制作の流れ
           </span>
           <button
             onClick={onClose}
-            className="hover:rotate-90 transition-transform"
+            className="neo-btn"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'white',
+              boxShadow: 'none',
+            }}
           >
-            <X size={24} strokeWidth={3} />
+            <X size={24} />
           </button>
         </div>
-        <div className="p-6 space-y-6 text-left">
+        <div style={{ padding: '24px' }}>
           {steps.map((s, i) => (
-            <div key={i} className="flex gap-4 relative">
-              {i !== steps.length - 1 && (
-                <div className="absolute left-[15px] top-10 bottom-[-20px] w-1 bg-black/20" />
-              )}
-              <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-black italic shrink-0 z-10 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
-                {i + 1}
-              </div>
-              <div className="pb-4">
-                <h4 className="font-black text-[17px] leading-tight mb-1">
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                gap: '16px',
+                marginBottom: '24px',
+                position: 'relative',
+              }}
+            >
+              <div className="step-badge">{i + 1}</div>
+              <div style={{ textAlign: 'left' }}>
+                <h4 style={{ fontWeight: '900', marginBottom: '4px' }}>
                   {s.title}
                 </h4>
-                <p className="text-[13px] font-medium opacity-80 leading-relaxed">
-                  {s.desc}
-                </p>
+                <p style={{ fontSize: '13px', opacity: 0.8 }}>{s.desc}</p>
               </div>
             </div>
           ))}
           <button
             onClick={onClose}
-            className="w-full py-4 bg-black text-white font-black uppercase italic mt-4 active:scale-95 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]"
+            className="neo-btn"
+            style={{
+              width: '100%',
+              padding: '16px',
+              backgroundColor: 'black',
+              color: 'white',
+            }}
           >
             閉じる
           </button>

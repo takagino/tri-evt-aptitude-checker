@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Loader2, Sparkles, Zap, Search } from 'lucide-react';
+import { Send, Zap } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import { SYSTEM_INSTRUCTION } from '../data/prompts';
 import { jobData } from '../data/jobData';
@@ -32,10 +32,7 @@ const Chat = ({ onFinish }) => {
   const inputRef = useRef(null);
 
   const client = useMemo(
-    () =>
-      new GoogleGenAI({
-        apiKey: import.meta.env.VITE_GEMINI_API_KEY,
-      }),
+    () => new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY }),
     [],
   );
 
@@ -54,12 +51,6 @@ const Chat = ({ onFinish }) => {
   }, [isCalculating]);
 
   useEffect(() => {
-    if (!isLoading) {
-      inputRef.current?.focus();
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     const startDiagnosis = async () => {
       setIsLoading(true);
       try {
@@ -70,14 +61,12 @@ const Chat = ({ onFinish }) => {
           config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 1.0 },
           contents: [{ role: 'user', parts: [{ text: initialPrompt }] }],
         });
-
         setMessages([
           { role: 'user', text: initialPrompt, hidden: true },
           { role: 'model', text: result.text },
         ]);
       } catch (err) {
-        console.error('Initial Error:', err);
-        setError('うまく開始できなかったみたい。ページを更新してみてね。');
+        setError('うまく開始できなかったみたい。');
       } finally {
         setIsLoading(false);
       }
@@ -85,30 +74,37 @@ const Chat = ({ onFinish }) => {
     startDiagnosis();
   }, [client]);
 
-  const handleSend = async (retryInput = null) => {
-    const targetInput = retryInput || input;
-    if (!targetInput.trim() || isLoading) return;
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+    const targetInput = input;
+    const newMessages = [...messages, { role: 'user', text: targetInput }];
+    setMessages(newMessages);
+    setInput('');
+    setIsLoading(true);
 
-    setError(null);
-    let newMessages;
-    if (retryInput) {
-      newMessages = [...messages];
-    } else {
-      newMessages = [...messages, { role: 'user', text: targetInput }];
-      setMessages(newMessages);
-      setInput('');
-      setTimeout(() => inputRef.current?.focus(), 0);
+    // --- 【デバッグ用】 "test" と入力されたら強制終了 ---
+    if (targetInput.toLowerCase() === 'test') {
+      setIsCalculating(true);
+      setTimeout(() => {
+        onFinish({
+          job_id: 1,
+          aiReason: 'テスト完了',
+          scores: {
+            planning: 50,
+            creative: 50,
+            technical: 50,
+            analysis: 50,
+            communication: 50,
+          },
+        });
+      }, 2000);
+      return;
     }
 
-    setIsLoading(true);
     try {
       const result = await client.models.generateContent({
         model: MODEL,
-        config: {
-          systemInstruction: SYSTEM_INSTRUCTION,
-          temperature: 1.0,
-          maxOutputTokens: 1000,
-        },
+        config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 1.0 },
         contents: newMessages.map((m) => ({
           role: m.role,
           parts: [{ text: m.text }],
@@ -119,21 +115,13 @@ const Chat = ({ onFinish }) => {
       const jsonStr = extractJson(responseText);
 
       if (jsonStr) {
-        const parsedData = JSON.parse(jsonStr);
         setIsCalculating(true);
-
-        setTimeout(() => {
-          onFinish(parsedData);
-        }, 2000);
+        setTimeout(() => onFinish(JSON.parse(jsonStr)), 2000);
         return;
       }
-
       setMessages((prev) => [...prev, { role: 'model', text: responseText }]);
     } catch (err) {
-      console.error('Send Error:', err);
-      setError(
-        'ごめんね、今AIがちょっと混み合っているみたい。もう一度送ってみてね。',
-      );
+      setError('AIがちょっと混み合っているみたい。');
     } finally {
       setIsLoading(false);
     }
@@ -143,45 +131,58 @@ const Chat = ({ onFinish }) => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const isButtonDisabled = isLoading || isCalculating || !input.trim();
-
   return (
-    <div className="flex flex-col h-full bg-[#E8EDF2] relative">
+    <div className="chat-page">
       <AnimatePresence>
         {isCalculating && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#FFDE00] flex flex-col items-center justify-center p-10 text-center"
+            className="analysis-overlay"
           >
-            <div className="w-full max-w-xs bg-white border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8 flex flex-col items-center">
+            <div className="analysis-card">
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 0.5 }}
-                className="mb-4 bg-black text-white px-4 py-1 font-black italic text-xl uppercase"
+                className="analysis-status-tag"
               >
                 Analyzing...
               </motion.div>
-
-              <div className="h-40 flex items-center justify-center overflow-hidden mb-6">
+              <div
+                style={{
+                  height: '160px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '24px',
+                }}
+              >
                 <img
                   src={`/images/${jobData[rouletteIndex].imagePath}`}
                   alt="scanning"
-                  className="w-32 h-32 object-contain"
+                  style={{
+                    width: '128px',
+                    height: '128px',
+                    objectFit: 'contain',
+                  }}
                 />
               </div>
-
-              <div className="text-2xl font-black italic tracking-tighter uppercase mb-4 border-b-4 border-black pb-2 w-full">
+              <div
+                className="neo-label"
+                style={{
+                  width: '100%',
+                  marginBottom: '16px',
+                  fontSize: '20px',
+                }}
+              >
                 {jobData[rouletteIndex].title}
               </div>
               <p className="font-bold text-sm">君の才能をスキャン中...</p>
             </div>
-
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-              className="mt-10"
+              style={{ marginTop: '40px' }}
             >
               <Zap size={48} fill="black" />
             </motion.div>
@@ -189,24 +190,20 @@ const Chat = ({ onFinish }) => {
         )}
       </AnimatePresence>
 
-      <header className="bg-white border-b-4 border-black p-4 sticky top-0 z-10">
-        <div className="flex justify-between items-center mb-2 px-1">
-          <div className="flex items-center gap-2">
+      <header className="chat-header">
+        <div className="chat-header-top">
+          <div className="chat-status-group">
             <Zap size={18} fill="black" strokeWidth={3} />
-            <span className="text-sm font-black italic uppercase tracking-widest">
-              ANALYZING...
-            </span>
+            <span className="chat-status-text">ANALYZING...</span>
           </div>
-          <span className="text-sm font-black italic">
+          <span className="chat-status-text">
             {currentQuestionNumber} / {TOTAL_QUESTIONS}
           </span>
         </div>
-
-        <div className="w-full h-4 bg-white border-4 border-black relative overflow-hidden">
-          <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,black_10px,black_20px)]" />
-
+        <div className="progress-bar-outer">
+          <div className="progress-bar-bg" />
           <motion.div
-            className="h-full bg-[#00FF94] border-r-4 border-black relative z-10"
+            className="progress-bar-inner"
             animate={{
               width: `${(currentQuestionNumber / TOTAL_QUESTIONS) * 100}%`,
             }}
@@ -215,7 +212,7 @@ const Chat = ({ onFinish }) => {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+      <div className="message-list custom-scrollbar">
         <AnimatePresence mode="popLayout">
           {messages
             .filter((m) => !m.hidden)
@@ -224,14 +221,10 @@ const Chat = ({ onFinish }) => {
                 key={i}
                 initial={{ x: msg.role === 'user' ? 20 : -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`message-wrapper ${msg.role === 'user' ? 'user' : 'model'}`}
               >
                 <div
-                  className={`p-4 border-4 border-black font-bold text-[15px] leading-relaxed whitespace-pre-wrap ${
-                    msg.role === 'user'
-                      ? 'bg-[#00E0FF] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-                      : 'bg-white shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-                  }`}
+                  className={`message-bubble ${msg.role === 'user' ? 'message-user' : 'message-model'}`}
                 >
                   {msg.text}
                 </div>
@@ -240,8 +233,7 @@ const Chat = ({ onFinish }) => {
         </AnimatePresence>
         <div ref={chatEndRef} />
       </div>
-
-      <footer className="p-4 pb-8 bg-white border-t-4 border-black flex gap-2">
+      <footer className="chat-footer">
         <input
           ref={inputRef}
           type="text"
@@ -253,30 +245,17 @@ const Chat = ({ onFinish }) => {
               handleSend();
             }
           }}
-          className="flex-1 border-4 border-black bg-[#F1F3F5] px-4 py-4 font-black outline-none focus:bg-[#00FF94]/10 transition-all placeholder:text-slate-400"
+          className="chat-input"
           placeholder={isLoading ? 'SCANNING...' : 'INPUT ANSWER!'}
           disabled={isLoading || isCalculating}
         />
-        <motion.button
-          whileHover={
-            !isButtonDisabled
-              ? {
-                  y: 2,
-                  boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)',
-                }
-              : {}
-          }
-          transition={{
-            type: 'tween',
-            ease: 'easeOut',
-            duration: 0,
-          }}
-          onClick={() => handleSend()}
-          disabled={isButtonDisabled}
-          className="bg-[#FFDE00] border-4 border-black px-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors disabled:bg-slate-200"
+        <button
+          onClick={handleSend}
+          disabled={isLoading || isCalculating || !input.trim()}
+          className="neo-btn send-btn"
         >
           <Send size={24} strokeWidth={3} />
-        </motion.button>
+        </button>
       </footer>
     </div>
   );

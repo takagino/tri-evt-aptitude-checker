@@ -4,6 +4,7 @@ import Intro from './components/Intro';
 import Chat from './components/Chat';
 import Result from './components/Result';
 import { jobData } from './data/jobData';
+import './App.css';
 
 const MOCK_RESULT = {
   ...jobData.find((j) => j.id === 1),
@@ -39,8 +40,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-[800px] h-screen bg-[#FFDE00] flex items-center justify-center p-10 font-bold selection:bg-[#00E0FF]">
-      <div className="w-full max-w-xl bg-white border-[6px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-full relative flex flex-col">
+    <div className="app-container">
+      <div className={`diagnosis-card ${step === 'intro' ? 'is-intro' : ''}`}>
         <AnimatePresence mode="wait">
           {step === 'intro' && <Intro key="intro" onStart={handleStart} />}
           {step === 'chat' && <Chat key="chat" onFinish={handleFinish} />}

@@ -1,0 +1,469 @@
+/* =========================================
+   1. Global & Layout Base
+========================================= */
+.app-container {
+  min-height: 800px;
+  height: 100vh;
+  background-color: #ffde00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  font-weight: bold;
+}
+
+.app-container ::selection {
+  background-color: #00e0ff;
+}
+
+/* メインのカード枠（固定レイアウトの要） */
+.diagnosis-card {
+  width: 100%;
+  max-width: 672px;
+  height: 90vh; /* 画面サイズに合わせて調整 */
+  min-height: 600px;
+  background-color: #ffffff;
+  border: 6px solid #000000;
+  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* カード外へのはみ出しを防止 */
+}
+
+.diagnosis-card.is-intro {
+  overflow: visible;
+}
+
+/* 各画面コンポーネントのベース */
+.intro-container,
+.chat-page,
+.result-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: #e8edf2; /* ChatとResultの共通背景色 */
+}
+
+/* Intro画面のみ背景色を上書き */
+.intro-container {
+  background-color: #f8f9fa;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px;
+  text-align: center;
+  overflow: visible;
+}
+
+/* =========================================
+   2. Common UI Parts (ネオ・ブルータリズム)
+========================================= */
+.neo-card {
+  position: relative;
+  padding: 24px;
+  border: 4px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.neo-label {
+  display: inline-block;
+  border: 4px solid #000000;
+  padding: 4px 16px;
+  box-shadow: 4px 4px 0px 0px #000000;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+/* 共通ボタンスタイル */
+.neo-btn {
+  border: 4px solid #000000;
+  font-weight: 900;
+  box-shadow: 4px 4px 0px 0px #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease-out;
+  cursor: pointer;
+  outline: none;
+}
+
+.neo-btn:hover {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px 0px #000000;
+}
+
+.neo-btn:disabled {
+  background-color: #e2e8f0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+/* ナンバリング用黒バッジ */
+.step-badge {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+/* 共通のスクロール領域設定 */
+.message-list,
+.result-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 共通カスタムスクロールバー */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #000;
+  border: 2px solid #f1f1f1;
+}
+
+/* =========================================
+   3. Intro Screen Specific
+========================================= */
+.main-visual-img {
+  transform: scale(1.4);
+  max-width: 100%;
+  height: auto;
+}
+.text-content-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.question-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 900;
+  font-style: italic;
+  color: #1e293b;
+}
+
+.intro-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #000;
+}
+
+.talent-highlight {
+  color: #ff5c00;
+  font-size: 30px;
+  font-style: italic;
+  text-decoration: underline;
+  text-decoration-thickness: 8px;
+  text-decoration-color: rgba(0, 255, 148, 0.3);
+  text-underline-offset: -4px;
+}
+
+.time-hint {
+  font-size: 14px;
+  font-weight: bold;
+  color: #94a3b8;
+  font-style: italic;
+}
+.powered-text {
+  margin-top: 2em;
+  font-size: 10px;
+  font-weight: bold;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btn-start {
+  width: 100%;
+  padding: 20px;
+  background-color: #ff5c00;
+  color: #ffffff;
+  font-size: 20px;
+  gap: 12px;
+}
+
+/* =========================================
+   4. Chat Screen Specific
+========================================= */
+
+/* --- ヘッダー --- */
+.chat-header {
+  background-color: #ffffff;
+  border-bottom: 4px solid #000000;
+  padding: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.chat-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px; /* プログレスバーとの余白を少し広げる */
+  padding-bottom: 8px; /* 下に余白を作る */
+  border-bottom: 2px dashed #000000; /* ★ここを追加：点線で分かりやすく区切る */
+}
+
+.chat-status-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-status-text {
+  font-size: 14px;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+/* プログレスバー（枠） */
+.progress-bar-outer {
+  width: 100%;
+  height: 16px;
+  background-color: #ffffff;
+  border: 4px solid #000000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* プログレスバー背景の斜線模様 */
+.progress-bar-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    black 10px,
+    black 20px
+  );
+}
+
+/* プログレスバーの中身（緑） */
+.progress-bar-inner {
+  height: 100%;
+  background-color: #00ff94;
+  border-right: 4px solid #000000;
+  position: relative;
+  z-index: 10;
+}
+
+/* --- メッセージエリア --- */
+.message-list {
+  padding: 24px 16px; /* 上下の余白を広げる */
+  gap: 24px; /* メッセージ同士の余白 */
+  display: flex;
+  flex-direction: column; /* ★ここを追加：メッセージを縦に並べる */
+}
+
+/* 各メッセージを囲むコンテナ（これで右寄せ・左寄せを制御する） */
+.message-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.message-wrapper.user {
+  justify-content: flex-end; /* ★ここを追加：ユーザーは右寄せ */
+}
+
+.message-wrapper.model {
+  justify-content: flex-start; /* ★ここを追加：AIは左寄せ */
+}
+
+/* メッセージの吹き出し本体 */
+.message-bubble {
+  max-width: 85%;
+  padding: 16px;
+  border: 4px solid #000000;
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap; /* ★ここを追加：AIの改行をそのまま表示する */
+}
+
+.message-user {
+  background-color: #00e0ff;
+  box-shadow: 4px 4px 0px #000;
+}
+.message-model {
+  background-color: #ffffff;
+  box-shadow: -4px 4px 0px #000;
+}
+
+/* --- フッター --- */
+.chat-footer {
+  padding: 16px;
+  padding-bottom: 32px;
+  background-color: #ffffff;
+  border-top: 4px solid #000;
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  border: 4px solid #000000;
+  background-color: #f1f3f5;
+  padding: 16px;
+  font-weight: 900;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.chat-input:focus {
+  background-color: rgba(0, 255, 148, 0.1);
+  box-shadow: inset 0 0 0 2px #000;
+}
+.chat-input::placeholder {
+  color: #94a3b8;
+}
+.send-btn {
+  padding: 0 24px;
+  background-color: #ffde00;
+}
+
+/* --- 解析中オーバーレイ（ローディング画面） --- */
+.analysis-overlay {
+  position: absolute;
+  inset: 0; /* top:0, right:0, bottom:0, left:0 と同じ意味で、親要素にピッタリ被さります */
+  z-index: 100; /* ヘッダー(10)やフッターよりも確実に手前に表示させる */
+  background-color: #ffde00; /* チャット画面を完全に隠すための背景色 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.analysis-card {
+  width: 100%;
+  max-width: 320px;
+  background-color: #ffffff;
+  border: 8px solid #000000;
+  box-shadow: 12px 12px 0px 0px #000000;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.analysis-status-tag {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 6px 16px;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-bottom: -16px; /* カードの上部にめり込ませるようなデザインの場合はマイナスにするのもアリです */
+}
+
+/* JSX内に残っていた text-sm などのTailwindクラスの代わり */
+.analysis-card p.text-sm {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* =========================================
+   5. Result Screen Specific
+========================================= */
+.result-header {
+  background-color: #fff;
+  border-bottom: 4px solid #000;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.result-scroll-area {
+  padding: 16px;
+  padding-bottom: 96px; /* フローティングボタンと被らないように余白 */
+}
+
+.stat-bar-container {
+  height: 16px;
+  background-color: #f1f5f9;
+  border: 2px solid #000;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.stat-bar-fill {
+  height: 100%;
+  border-right: 2px solid #000;
+}
+
+.mission-item {
+  background-color: #fff;
+  border: 2px solid #000;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  text-align: left;
+}
+
+.floating-controls {
+  position: absolute;
+  bottom: 140px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 40;
+}
+
+.result-footer {
+  padding: 16px;
+  padding-bottom: 32px; /* スマホの下部領域を考慮して少し広めに */
+  background-color: #ffffff;
+  border-top: 4px solid #000000;
+  display: flex;
+  gap: 12px;
+  z-index: 30;
+}
+
+/* --- 下部ボタンのデザイン（共通クラス .neo-btn と併用） --- */
+
+/* 四角いアイコンボタン（自動スクロール、トップへ戻る、リセット） */
+.control-btn {
+  width: 56px;
+  height: 56px;
+  background-color: #ffffff;
+  padding: 0; /* paddingをリセットして中央に配置しやすくする */
+}
+
+/* 「制作の流れ」ボタン（横に長いメインボタン） */
+.btn-main {
+  flex: 1; /* 親要素の幅に合わせて伸びる */
+  background-color: #00ff94;
+  padding: 0 16px; /* 横方向のパディングのみ設定 */
+  font-size: 20px;
+  gap: 8px; /* アイコンとテキストの間隔 */
+}
