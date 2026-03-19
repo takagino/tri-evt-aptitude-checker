@@ -467,3 +467,10 @@
   font-size: 20px;
   gap: 8px; /* アイコンとテキストの間隔 */
 }
+
+/* --- セクション区切り線 --- */
+.section-divider {
+  border: none;
+  border-top: 4px dashed rgba(0, 0, 0, 0.2); /* やや薄めの黒の破線 */
+  margin: 68px 16px; /* 上下48px、左右16pxの余白 */
+}

@@ -131,6 +131,14 @@ const Chat = ({ onFinish }) => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    if (!isLoading && !isCalculating) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
+    }
+  }, [isLoading, isCalculating]);
+
   return (
     <div className="chat-page">
       <AnimatePresence>

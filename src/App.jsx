@@ -20,11 +20,11 @@ const MOCK_RESULT = {
 };
 
 function App() {
-  // const [step, setStep] = useState('intro');
-  // const [diagnosisResult, setDiagnosisResult] = useState(null);
+  const [step, setStep] = useState('intro');
+  const [diagnosisResult, setDiagnosisResult] = useState(null);
 
-  const [step, setStep] = useState('result');
-  const [diagnosisResult, setDiagnosisResult] = useState(MOCK_RESULT);
+  // const [step, setStep] = useState('result');
+  // const [diagnosisResult, setDiagnosisResult] = useState(MOCK_RESULT);
 
   const handleStart = () => setStep('chat');
   const handleFinish = (aiData) => {

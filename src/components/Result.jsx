@@ -4,13 +4,14 @@ import {
   RefreshCcw,
   ClipboardList,
   Zap,
-  Heart,
+  Users,
   Star,
   BookOpen,
   ChevronUp,
   Play,
   Pause,
   X,
+  ArrowRightCircle,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { jobData } from '../data/jobData';
@@ -146,7 +147,16 @@ const Result = ({ result, onReset }) => {
             className="neo-card"
             style={{ marginTop: '32px', textAlign: 'left' }}
           >
-            <div className="talent-report-title">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '16px',
+                paddingBottom: '8px',
+                borderBottom: '2px solid black',
+              }}
+            >
               <Zap fill="black" />{' '}
               <span style={{ fontWeight: '900' }}>才能分析レポート</span>
             </div>
@@ -207,6 +217,8 @@ const Result = ({ result, onReset }) => {
           </div>
         </section>
 
+        <hr className="section-divider" />
+
         {/* --- SECTION 2: 職業詳細 --- */}
         <section style={{ marginBottom: '48px' }}>
           <div
@@ -236,9 +248,7 @@ const Result = ({ result, onReset }) => {
             }}
           >
             <BookOpen size={20} color="#FF00E5" />
-            <h3 style={{ fontSize: '18px', fontWeight: '900' }}>
-              主なミッション
-            </h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '900' }}>主な仕事</h3>
           </div>
           <div
             style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
@@ -263,7 +273,68 @@ const Result = ({ result, onReset }) => {
               </div>
             ))}
           </div>
+
+          <div className="neo-card" style={{ marginTop: '32px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '16px',
+                borderBottom: '2px solid black',
+                paddingBottom: '8px',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                fontWeight: '900',
+                opacity: 0.5,
+              }}
+            >
+              <Users size={16} strokeWidth={3} />
+              <h3 style={{ fontSize: '18px', fontWeight: '900' }}>
+                相性の良い職種
+              </h3>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                textAlign: 'left',
+              }}
+            >
+              {jobDetails.compatibility?.map((c, i) => (
+                <div key={i}>
+                  <div
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: '900',
+                      color: '#FF5C00',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    <ArrowRightCircle size={14} strokeWidth={3} /> {c.title}
+                  </div>
+                  <p
+                    style={{
+                      fontSize: '12px',
+                      color: '#64748b',
+                      fontStyle: 'italic',
+                      paddingLeft: '20px',
+                      lineHeight: '1.6',
+                    }}
+                  >
+                    {c.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
+
+        <hr className="section-divider" />
 
         {/* --- SECTION 3: 日常トレーニング --- */}
         <section style={{ paddingBottom: '24px' }}>
