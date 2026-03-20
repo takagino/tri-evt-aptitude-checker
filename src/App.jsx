@@ -11,13 +11,13 @@ const IS_DEBUG = false;
 
 const MOCK_RESULT = {
   ...jobData[0],
-  aiReason: '君の回答からは、細部への並々ならぬこだわりが感じられたよ！',
+  aiReason: 'テスト完了',
   scores: {
-    planning: 80,
-    creative: 100,
-    technical: 40,
-    analysis: 90,
-    communication: 70,
+    planning: 50,
+    creative: 50,
+    technical: 50,
+    analysis: 50,
+    communication: 50,
   },
 };
 
