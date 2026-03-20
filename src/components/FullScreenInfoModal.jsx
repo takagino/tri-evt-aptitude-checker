@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Zap, TrendingUp, Users, Building } from 'lucide-react';
 import TabTimeline from './TabTimeline';
@@ -7,6 +7,7 @@ import TabCareer from './TabCareer';
 
 const FullScreenInfoModal = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('timeline');
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     const originalWarn = console.warn;
@@ -25,6 +26,12 @@ const FullScreenInfoModal = ({ onClose }) => {
       document.body.style.overflow = 'auto';
     };
   }, []);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
 
   const tabs = [
     {
@@ -53,7 +60,6 @@ const FullScreenInfoModal = ({ onClose }) => {
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="info-modal-overlay"
       style={{
         position: 'fixed',
         top: 0,
@@ -133,19 +139,12 @@ const FullScreenInfoModal = ({ onClose }) => {
             }}
           >
             {tab.icon}
-            <span
-              style={{
-                transform: activeTab === tab.id ? 'scale(1.05)' : 'none',
-              }}
-            >
-              {tab.label}
-            </span>
+            <span>{tab.label}</span>
           </button>
         ))}
       </nav>
-
-      {/* コンテンツエリア */}
       <main
+        ref={scrollContainerRef}
         className="custom-scrollbar"
         style={{ flex: 1, overflowY: 'auto', padding: '24px' }}
       >
