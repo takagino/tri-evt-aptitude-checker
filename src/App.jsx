@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'motion/react';
 import Intro from './components/Intro';
 import Chat from './components/Chat';
@@ -6,10 +6,12 @@ import Result from './components/Result';
 import { jobData } from './data/jobData';
 import './App.css';
 
+// デバッグ用フラグ
+const IS_DEBUG = false;
+
 const MOCK_RESULT = {
-  ...jobData.find((j) => j.id === 1),
-  aiReason:
-    '君の回答からは、細部への並々ならぬこだわりと、使う人への深い思いやりが感じられたよ！それはWebの世界では「最高のユーザー体験」を創り出す武器になる。チームを支え、画面の向こうの誰かを笑顔にするデザイナーとして活躍する姿が目に浮かぶよ！',
+  ...jobData[0],
+  aiReason: '君の回答からは、細部への並々ならぬこだわりが感じられたよ！',
   scores: {
     planning: 80,
     creative: 100,
@@ -20,16 +22,14 @@ const MOCK_RESULT = {
 };
 
 function App() {
-  // 本番用
-  // const [step, setStep] = useState('intro');
-  // const [diagnosisResult, setDiagnosisResult] = useState(null);
-
-  // デバッグ用
-  const [step, setStep] = useState('result');
-  const [diagnosisResult, setDiagnosisResult] = useState(MOCK_RESULT);
+  const [step, setStep] = useState(IS_DEBUG ? 'result' : 'intro');
+  const [diagnosisResult, setDiagnosisResult] = useState(
+    IS_DEBUG ? MOCK_RESULT : null,
+  );
 
   const handleStart = () => setStep('chat');
-  const handleFinish = (aiData) => {
+
+  const handleFinish = useCallback((aiData) => {
     const jobDetails = jobData.find((j) => j.id === Number(aiData.job_id));
     if (jobDetails) {
       setDiagnosisResult({
@@ -39,6 +39,11 @@ function App() {
       });
       setStep('result');
     }
+  }, []);
+
+  const handleReset = () => {
+    setDiagnosisResult(null);
+    setStep('intro');
   };
 
   return (
@@ -51,7 +56,7 @@ function App() {
             <Result
               key="result"
               result={diagnosisResult}
-              onReset={() => setStep('intro')}
+              onReset={handleReset}
             />
           )}
         </AnimatePresence>
