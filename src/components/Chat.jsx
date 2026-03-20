@@ -1,21 +1,24 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Zap, Loader2 } from 'lucide-react';
+import { Send, Zap } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import { SYSTEM_INSTRUCTION } from '../data/prompts';
 import { jobData } from '../data/jobData';
 
-const MODEL_NAME = 'gemini-2.5-flash-lite';
+const MODEL = 'gemini-2.5-flash-lite';
 const TOTAL_QUESTIONS = 10;
 
-// JSON抽出ユーティリティ
-const parseAIResponse = (text) => {
-  try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-  } catch (e) {
-    return null;
+const extractJson = (text) => {
+  if (!text) return null;
+  const start = text.indexOf('{');
+  if (start === -1) return null;
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    if (text[i] === '}') depth--;
+    if (depth === 0) return text.substring(start, i + 1);
   }
+  return null;
 };
 
 const Chat = ({ onFinish }) => {
@@ -24,128 +27,173 @@ const Chat = ({ onFinish }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [rouletteIndex, setRouletteIndex] = useState(0);
+  const [error, setError] = useState(null);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const genAI = useMemo(
+  const client = useMemo(
     () => new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY }),
     [],
   );
 
-  // 現在の質問数
-  const progress = useMemo(
-    () => messages.filter((m) => m.role === 'model').length,
-    [messages],
-  );
+  const currentQuestionNumber = useMemo(() => {
+    return messages.filter((m) => m.role === 'model').length;
+  }, [messages]);
 
-  // ルーレット演出
   useEffect(() => {
     let interval;
     if (isCalculating) {
-      interval = setInterval(
-        () => setRouletteIndex((prev) => (prev + 1) % jobData.length),
-        80,
-      );
+      interval = setInterval(() => {
+        setRouletteIndex((prev) => (prev + 1) % jobData.length);
+      }, 80);
     }
     return () => clearInterval(interval);
   }, [isCalculating]);
 
-  // 初回起動
   useEffect(() => {
-    const initChat = async () => {
+    const startDiagnosis = async () => {
       setIsLoading(true);
       try {
-        const model = genAI.getGenerativeModel({
-          model: MODEL_NAME,
-          systemInstruction: SYSTEM_INSTRUCTION,
+        const initialPrompt =
+          '診断を開始してください。最初の質問をお願いします。';
+        const result = await client.models.generateContent({
+          model: MODEL,
+          config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 1.0 },
+          contents: [{ role: 'user', parts: [{ text: initialPrompt }] }],
         });
-        const result = await model.generateContent('診断を開始してください。');
-        setMessages([{ role: 'model', text: result.response.text() }]);
+        setMessages([
+          { role: 'user', text: initialPrompt, hidden: true },
+          { role: 'model', text: result.text },
+        ]);
       } catch (err) {
-        console.error(err);
+        setError('うまく開始できなかったみたい。');
       } finally {
         setIsLoading(false);
       }
     };
-    initChat();
-  }, [genAI]);
+    startDiagnosis();
+  }, [client]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
-    const userText = input;
-    const updatedMessages = [...messages, { role: 'user', text: userText }];
-    setMessages(updatedMessages);
+    const targetInput = input;
+    const newMessages = [...messages, { role: 'user', text: targetInput }];
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
+    // --- 【デバッグ用】 "test" と入力されたら強制終了 ---
+    if (targetInput.toLowerCase() === 'test') {
+      setIsCalculating(true);
+      setTimeout(() => {
+        onFinish({
+          job_id: 1,
+          aiReason: 'テスト完了',
+          scores: {
+            planning: 50,
+            creative: 50,
+            technical: 50,
+            analysis: 50,
+            communication: 50,
+          },
+        });
+      }, 2000);
+      return;
+    }
+
     try {
-      const model = genAI.getGenerativeModel({
-        model: MODEL_NAME,
-        systemInstruction: SYSTEM_INSTRUCTION,
-      });
-      const result = await model.generateContent({
-        contents: updatedMessages.map((m) => ({
+      const result = await client.models.generateContent({
+        model: MODEL,
+        config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 1.0 },
+        contents: newMessages.map((m) => ({
           role: m.role,
           parts: [{ text: m.text }],
         })),
       });
 
-      const responseText = result.response.text();
-      const resultData = parseAIResponse(responseText);
+      const responseText = result.text;
+      const jsonStr = extractJson(responseText);
 
-      if (resultData && resultData.job_id) {
+      if (jsonStr) {
         setIsCalculating(true);
-        setTimeout(() => onFinish(resultData), 2500); // 演出のため少し待機
-      } else {
-        setMessages((prev) => [...prev, { role: 'model', text: responseText }]);
+        setTimeout(() => onFinish(JSON.parse(jsonStr)), 2000);
+        return;
       }
+      setMessages((prev) => [...prev, { role: 'model', text: responseText }]);
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'model', text: '通信エラーが発生したよ。もう一度送ってみて！' },
-      ]);
+      setError('AIがちょっと混み合っているみたい。');
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(
-    () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }),
-    [messages],
-  );
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    if (!isLoading && !isCalculating) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
+    }
+  }, [isLoading, isCalculating]);
 
   return (
     <div className="chat-page">
-      {/* 才能スキャン中オーバーレイ */}
       <AnimatePresence>
         {isCalculating && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="analysis-overlay"
           >
             <div className="analysis-card">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 0.5 }}
+                className="analysis-status-tag"
+              >
+                Analyzing...
+              </motion.div>
+              <div
+                style={{
+                  height: '160px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '24px',
+                }}
+              >
+                <img
+                  src={`/images/${jobData[rouletteIndex].imagePath}`}
+                  alt="scanning"
+                  style={{
+                    width: '128px',
+                    height: '128px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </div>
               <div
                 className="neo-label"
-                style={{ backgroundColor: '#FFDE00', marginBottom: '16px' }}
-              >
-                SCANNING...
-              </div>
-              <img
-                src={`/images/${jobData[rouletteIndex].imagePath}`}
-                alt="scanning"
                 style={{
-                  width: '140px',
-                  height: '140px',
-                  objectFit: 'contain',
+                  width: '100%',
                   marginBottom: '16px',
+                  fontSize: '20px',
                 }}
-              />
-              <div className="neo-label" style={{ width: '100%' }}>
+              >
                 {jobData[rouletteIndex].title}
               </div>
+              <p className="font-bold text-sm">君の才能をスキャン中...</p>
             </div>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              style={{ marginTop: '40px' }}
+            >
+              <Zap size={48} fill="black" />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -153,57 +201,65 @@ const Chat = ({ onFinish }) => {
       <header className="chat-header">
         <div className="chat-header-top">
           <div className="chat-status-group">
-            <Zap size={18} fill="black" />
-            <span className="chat-status-text">QUESTION</span>
+            <Zap size={18} fill="black" strokeWidth={3} />
+            <span className="chat-status-text">ANALYZING...</span>
           </div>
           <span className="chat-status-text">
-            {progress} / {TOTAL_QUESTIONS}
+            {currentQuestionNumber} / {TOTAL_QUESTIONS}
           </span>
         </div>
         <div className="progress-bar-outer">
+          <div className="progress-bar-bg" />
           <motion.div
             className="progress-bar-inner"
-            animate={{ width: `${(progress / TOTAL_QUESTIONS) * 100}%` }}
+            animate={{
+              width: `${(currentQuestionNumber / TOTAL_QUESTIONS) * 100}%`,
+            }}
+            transition={{ type: 'tween', ease: 'easeOut', duration: 0.3 }}
           />
         </div>
       </header>
 
       <div className="message-list custom-scrollbar">
-        {messages.map((msg, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`message-wrapper ${msg.role}`}
-          >
-            <div className={`message-bubble message-${msg.role}`}>
-              {msg.text}
-            </div>
-          </motion.div>
-        ))}
-        {isLoading && (
-          <div className="message-wrapper model">
-            <div className="message-bubble message-model">
-              <Loader2 className="animate-spin" />
-            </div>
-          </div>
-        )}
+        <AnimatePresence mode="popLayout">
+          {messages
+            .filter((m) => !m.hidden)
+            .map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ x: msg.role === 'user' ? 20 : -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                className={`message-wrapper ${msg.role === 'user' ? 'user' : 'model'}`}
+              >
+                <div
+                  className={`message-bubble ${msg.role === 'user' ? 'message-user' : 'message-model'}`}
+                >
+                  {msg.text}
+                </div>
+              </motion.div>
+            ))}
+        </AnimatePresence>
         <div ref={chatEndRef} />
       </div>
-
       <footer className="chat-footer">
         <input
           ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={isLoading ? 'AI思考中...' : '答えを入力してね！'}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+          className="chat-input"
+          placeholder={isLoading ? 'SCANNING...' : 'INPUT ANSWER!'}
           disabled={isLoading || isCalculating}
         />
         <button
           onClick={handleSend}
-          disabled={!input.trim() || isLoading}
+          disabled={isLoading || isCalculating || !input.trim()}
           className="neo-btn send-btn"
         >
           <Send size={24} strokeWidth={3} />
