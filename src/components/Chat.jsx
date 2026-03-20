@@ -66,6 +66,7 @@ const Chat = ({ onFinish }) => {
           { role: 'model', text: result.text },
         ]);
       } catch (err) {
+        console.error(err);
         setError('うまく開始できなかったみたい。');
       } finally {
         setIsLoading(false);
@@ -76,6 +77,7 @@ const Chat = ({ onFinish }) => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+    setError(null);
     const targetInput = input;
     const newMessages = [...messages, { role: 'user', text: targetInput }];
     setMessages(newMessages);
@@ -121,7 +123,8 @@ const Chat = ({ onFinish }) => {
       }
       setMessages((prev) => [...prev, { role: 'model', text: responseText }]);
     } catch (err) {
-      setError('AIがちょっと混み合っているみたい。');
+      console.error(err);
+      setError('AIがちょっと混み合っているみたい。もう一度送ってみて！');
     } finally {
       setIsLoading(false);
     }
@@ -238,6 +241,37 @@ const Chat = ({ onFinish }) => {
                 </div>
               </motion.div>
             ))}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="message-wrapper"
+              style={{ justifyContent: 'center', margin: '16px 0' }}
+            >
+              <div
+                className="neo-card"
+                style={{
+                  backgroundColor: '#FF3D00', // 警告の赤
+                  color: 'white',
+                  padding: '12px 20px',
+                  fontSize: '14px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => setError(null)} // クリックで消せる
+              >
+                <div style={{ fontWeight: '900', marginBottom: '4px' }}>
+                  ERROR!
+                </div>
+                {error}
+                <div
+                  style={{ fontSize: '10px', marginTop: '8px', opacity: 0.8 }}
+                >
+                  [ タップで閉じる ]
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
         <div ref={chatEndRef} />
       </div>
@@ -254,13 +288,19 @@ const Chat = ({ onFinish }) => {
             }
           }}
           className="chat-input"
-          placeholder={isLoading ? 'SCANNING...' : 'INPUT ANSWER!'}
+          style={
+            error ? { backgroundColor: '#ffebe6', borderColor: '#FF3D00' } : {}
+          }
+          placeholder={
+            isLoading ? 'SCANNING...' : error ? 'TRY AGAIN!' : 'INPUT ANSWER!'
+          }
           disabled={isLoading || isCalculating}
         />
         <button
           onClick={handleSend}
           disabled={isLoading || isCalculating || !input.trim()}
           className="neo-btn send-btn"
+          style={error ? { backgroundColor: '#FF3D00' } : {}}
         >
           <Send size={24} strokeWidth={3} />
         </button>
