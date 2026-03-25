@@ -115,8 +115,9 @@ export const schoolData = {
       badge: '11月',
       title: 'コンテスト応募 🏆',
       description: '外部コンテストへの挑戦！プロからの評価をもらいます。',
-      linkUrl: 'https://tridentwebdesign.blog.fc2.com/e/33bnk_contest2025',
-      imageUrl: 'https://placehold.co/600x400/FFDE00/000000?text=Contest',
+      linkUrl: 'https://tridentwebdesign.blog.fc2.com/e/html5award-2024',
+      imageUrl:
+        'https://computer.trident.ac.jp/datas/cache/images/2025/02/07/349x262_ea1e9d427fb5664c32c517a73e421e58_84a73514a0e14e5e1dbe9328131714636230dfc2.png',
     },
     {
       id: 9,

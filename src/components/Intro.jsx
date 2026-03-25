@@ -10,7 +10,7 @@ const Intro = ({ onStart }) => {
       className="intro-container"
     >
       <motion.div
-        animate={{ y: [-5, 5, -5] }}
+        animate={{ y: [-10, 0, -10] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="main-visual-wrapper"
       >
