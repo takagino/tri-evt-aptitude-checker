@@ -297,21 +297,21 @@ export const schoolData = {
     ],
     threeYearStats: [
       {
-        year: 2025,
-        employmentRate: 98.5,
-        industryRate: 85.0,
+        year: 2026,
+        employmentRate: 100,
+        industryRate: 69.5,
         jobRoles: [
-          { name: 'デザイナー', value: 35, color: NEO_COLORS.MAGENTA },
-          { name: 'エンジニア', value: 30, color: NEO_COLORS.CYAN },
-          { name: 'ディレクター', value: 10, color: NEO_COLORS.PURPLE },
-          { name: 'Web・広報担当', value: 10, color: NEO_COLORS.GREEN },
-          { name: 'マーケター', value: 5, color: NEO_COLORS.YELLOW },
-          { name: 'IT系', value: 5, color: NEO_COLORS.ORANGE },
-          { name: 'その他', value: 5, color: NEO_COLORS.GRAY },
+          { name: 'デザイナー', value: 6, color: NEO_COLORS.MAGENTA },
+          { name: 'エンジニア', value: 6, color: NEO_COLORS.CYAN },
+          { name: 'ディレクター', value: 2, color: NEO_COLORS.PURPLE },
+          { name: 'Web・広報担当', value: 1, color: NEO_COLORS.GREEN },
+          { name: 'マーケター', value: 1, color: NEO_COLORS.YELLOW },
+          { name: 'IT系', value: 4, color: NEO_COLORS.ORANGE },
+          { name: 'その他', value: 3, color: NEO_COLORS.GRAY },
         ],
       },
       {
-        year: 2024,
+        year: 2025,
         employmentRate: 98.5,
         industryRate: 85.0,
         jobRoles: [
