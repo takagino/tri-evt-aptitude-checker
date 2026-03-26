@@ -118,7 +118,7 @@ const TabDemographics = () => {
         {renderPieChart(gender, '男女比')}
         {renderPieChart(highSchool, '出身高校の学科は？')}
         {renderPieChart(commute, 'どこから通っている？')}
-        {renderPieChart(mbti, 'MBTIのタイプは？（16タイプ）')}
+        {/* {renderPieChart(mbti, 'MBTIのタイプは？（16タイプ）')} */}
         {renderPieChart(sns, '一番よく使うSNSは？')}
         {renderPieChart(culture, '放課後や休日の過ごし方は？')}
         {renderPieChart(partTimeJob, 'アルバイトしてる？')}

@@ -144,9 +144,9 @@ export const schoolData = {
   // ==========================================
   demographics: {
     gender: [
-      { name: '男子', value: 60, color: NEO_COLORS.CYAN },
-      { name: '女子', value: 35, color: NEO_COLORS.MAGENTA },
-      { name: 'その他', value: 5, color: NEO_COLORS.YELLOW },
+      { name: '男子', value: 53, color: NEO_COLORS.CYAN },
+      { name: '女子', value: 47, color: NEO_COLORS.MAGENTA },
+      { name: 'その他', value: 0, color: NEO_COLORS.YELLOW },
     ],
     highSchool: [
       { name: '普通科', value: 55, color: NEO_COLORS.RED },
